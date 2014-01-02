@@ -1,4 +1,4 @@
 Model
 =====
 
-Model Zf2 Symfony
+Model Zf2
