@@ -1,0 +1,28 @@
+{
+    "name": "isdarka/model",
+    "description": "Model From Zend Framework 2",
+    "homepage": "https://github.com/isdarka/Model",
+    "type": "library",
+    "version": "1.0",
+    "license": "MIT",
+    "keywords": [
+        "isdarka",
+        "zend framework 2",
+        "zf2",
+        "model"
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "authors": [
+        {
+            "name": "Israel Ruiz",
+            "email": "musicogui@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Model\\": "src/"
+        }
+    }
+}
