@@ -43,6 +43,7 @@ abstract class AbstractCatalog implements CatalogInterface
 			$this->insert = $this->sql->insert($this->getMetadata()->getTableName());
 			$data = $this->getMetadata()->toCreateArray($bean);
 			$data = array_filter($data, array($this, 'isNotNull'));
+			$data = array_map(array($this, 'filterTags'), $data);
 			$this->insert->values($data);
 			$this->execute($this->insert);
 			
@@ -64,6 +65,7 @@ abstract class AbstractCatalog implements CatalogInterface
 			$this->update = $this->sql->update($this->getMetadata()->getTableName());
 			$data = $this->getMetadata()->toUpdateArray($bean);
 			$data = array_filter($data, array($this, 'isNotNull'));
+			$data = array_map(array($this, 'filterTags'), $data);
 			$this->update->set($data);
 			$where = new Where();
 			$where->equalTo($this->getMetadata()->getPrimaryKey(), $bean->getIndex());
@@ -144,6 +146,15 @@ abstract class AbstractCatalog implements CatalogInterface
 	 */
 	public function isNotNull($field){
 		return !is_null($field);
+	}
+	
+	/**
+	 * 
+	 * @param string $field
+	 */
+	public function filterTags($field)
+	{
+		return strip_tags($field);
 	}
 	
 	/**
