@@ -12,4 +12,7 @@ interface CatalogInterface
 {
 	public function save(AbstractBean $bean);
 	
+// 	protected function create($bean);
+	
+// 	private function update($bean);
 }

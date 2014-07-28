@@ -13,7 +13,6 @@ use Model\Bean\AbstractBean;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\PreparableSqlInterface;
-use Zend\Db\Sql\Expression;
 
 abstract class AbstractCatalog implements CatalogInterface
 {
@@ -22,6 +21,11 @@ abstract class AbstractCatalog implements CatalogInterface
 	protected $update;
 	protected $insert;
 	protected $delete;
+<<<<<<< HEAD
+=======
+	protected $hasTransaction = false;
+	
+>>>>>>> 6e7ce30901df23638fa12db684317d62d9d42400
 	public function __construct(Adapter $adapter)
 	{
 		$this->adapter = $adapter;
@@ -37,6 +41,17 @@ abstract class AbstractCatalog implements CatalogInterface
 			$this->create($bean);
 	}
 		
+<<<<<<< HEAD
+// 	protected function create(AbstractBean $bean)
+// 	{
+// 		$this->insert = $this->sql->insert($this->getMetadata()->getTableName());
+// 		$this->insert->values($bean->toArray());
+// 		$this->execute($this->insert);
+		
+// 		$this->getMetadata()->getFactory()->populate($bean, array(
+// 				$this->getMetadata()->getPrimaryKey() => $this->getLastInsertId(),
+// 		));
+// 	}
 	
 	protected function create(AbstractBean $bean)
 	{
@@ -44,95 +59,89 @@ abstract class AbstractCatalog implements CatalogInterface
 			$this->insert = $this->sql->insert($this->getMetadata()->getTableName());
 			$data = $this->getMetadata()->toCreateArray($bean);
 			$data = array_filter($data, array($this, 'isNotNull'));
-			$data = array_map(array($this, 'filterTags'), $data);
 			$this->insert->values($data);
 			$this->execute($this->insert);
 			
 			$this->getMetadata()->getFactory()->populate($bean, array(
 					$this->getMetadata()->getPrimaryKey() => $this->getLastInsertId(),
 			));
-			
-		} catch (\Zend\Db\Exception\ExceptionInterface $e) {
-            $pdoException = $e->getPrevious();
-            if($pdoException instanceof \PDOException)
-            {
-                $pdoException->errorInfo;
-                if($pdoException->errorInfo[1] == 1062)
-                    throw new \Exception("Duplicate entry", 1062, $pdoException);
-                if($pdoException->errorInfo[1] == 1452)
-                    throw new \Exception("Integrity constraint violation" . $pdoException->getMessage(), 1062, $pdoException);
-            }
-            throw new \Exception("Can't create bean");
+		}catch (\Zend\Db\Exception\ExceptionInterface $e) { 	
+			var_dump($e->getMessage());
+			die();		
+			throw $e;
 		} catch (\Exception $e) {
-			throw new \Exception("Can't create bean");
+			var_dump($e->getMessage());
+			die();
+			throw $e;
 		}
+=======
+	protected function create(AbstractBean $bean)
+	{
+		$this->insert = $this->sql->insert($this->getMetadata()->getTableName());
+		$this->insert->values($bean->toArray());
+		$this->execute($this->insert);
+		
+		$this->getMetadata()->getFactory()->populate($bean, array(
+				$this->getMetadata()->getPrimaryKey() => $this->getLastInsertId(),
+		));
+>>>>>>> 6e7ce30901df23638fa12db684317d62d9d42400
 	}
 	
 	protected function update(AbstractBean $bean)
 	{
+<<<<<<< HEAD
 		try {
 			$this->update = $this->sql->update($this->getMetadata()->getTableName());
 			$data = $this->getMetadata()->toUpdateArray($bean);
 			$data = array_filter($data, array($this, 'isNotNull'));
-			$data = array_map(array($this, 'filterTags'), $data);
 			$this->update->set($data);
 			$where = new Where();
 			$where->equalTo($this->getMetadata()->getPrimaryKey(), $bean->getIndex());
 			$this->update->where($where);
 			$this->execute($this->update);
-		} catch (\Zend\Db\Exception\ExceptionInterface $e) {
-            $pdoException = $e->getPrevious();
-            if($pdoException instanceof \PDOException)
-            {
-                $pdoException->errorInfo;
-                if($pdoException->errorInfo[1] == 1062)
-                    throw new \Exception("Duplicate entry", 1062, $pdoException);
-                if($pdoException->errorInfo[1] == 1452)
-                    throw new \Exception("Integrity constraint violation", 1062, $pdoException);
-            }
-            throw new \Exception("Can't create bean");
+		}catch (\Zend\Db\Exception\ExceptionInterface $e) {
+			throw $e;
 		} catch (\Exception $e) {
-			throw new \Exception("Can't create bean");
+			throw $e;
 		}
+=======
+		
 	}
 	
 	public function delete(AbstractBean $bean)
 	{
-		try {
-			$this->delete = $this->sql->delete($this->getMetadata()->getTableName());
-			$where = new Where();
-			$where->equalTo($this->getMetadata()->getPrimaryKey(), $bean->getIndex());
-			$this->delete->where($where);
-			$this->execute($this->delete);
-		} catch (\Zend\Db\Exception\ExceptionInterface $e) {
-			$pdoException = $e->getPrevious();
-			if($pdoException instanceof \PDOException)
-			{
-				$pdoException->errorInfo;
-				if($pdoException->errorInfo[1] == 1062)
-					throw new \Exception("Duplicate entry", 1062, $pdoException);
-				if($pdoException->errorInfo[1] == 1452)
-					throw new \Exception("Integrity constraint violation", 1062, $pdoException);
-			}
-			throw new \Exception("Can't delete File");
-		} catch (\Exception $e) {
-			throw new \Exception("Can't delete File");
-		}
+		
+>>>>>>> 6e7ce30901df23638fa12db684317d62d9d42400
 	}
 	
 	public function beginTransaction()
 	{
+<<<<<<< HEAD
 		$this->adapter->getDriver()->getConnection()->beginTransaction();
+=======
+		if(!$this->hasTransaction()){
+			$this->adapter->getDriver()->getConnection()->beginTransaction();
+			$this->hasTransaction = true;			
+		}
+>>>>>>> 6e7ce30901df23638fa12db684317d62d9d42400
 	}
 	
 	public function commit()
 	{
 		$this->adapter->getDriver()->getConnection()->commit();
+<<<<<<< HEAD
+=======
+		$this->hasTransaction = false;
+>>>>>>> 6e7ce30901df23638fa12db684317d62d9d42400
 	}
 	
 	public function rollback()
 	{
 		$this->adapter->getDriver()->getConnection()->rollback();
+<<<<<<< HEAD
+=======
+		$this->hasTransaction = false;
+>>>>>>> 6e7ce30901df23638fa12db684317d62d9d42400
 	}
 	
 	/**
@@ -156,13 +165,6 @@ abstract class AbstractCatalog implements CatalogInterface
 		return !is_null($field);
 	}
 	
-	public function filterTags($field)
-	{
-		if($field instanceof Expression)
-			return $field;
-		return strip_tags($field);
-		
-	}
 	/**
 	 * 
 	 * @return string
@@ -174,8 +176,21 @@ abstract class AbstractCatalog implements CatalogInterface
 		
 		if($this->update)
 			return $this->update->getSqlString($this->adapter->getPlatform());
-		
-		if($this->delete)
-			return $this->delete->getSqlString($this->adapter->getPlatform());
+// 		var_dump($this->insert);
+// 		var_dump($this->update);
+// 		die();
+// 		return $this->sql->getgetSqlString($this->adapter->getPlatform());
 	}
+<<<<<<< HEAD
+=======
+	
+	/**
+	 * 
+	 * @return boolean
+	 */
+	public function hasTransaction()
+	{
+		return $this->hasTransaction;
+	}
+>>>>>>> 6e7ce30901df23638fa12db684317d62d9d42400
 }

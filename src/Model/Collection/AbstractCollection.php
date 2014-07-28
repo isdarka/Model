@@ -10,7 +10,8 @@ namespace Model\Collection;
 use Model\Interfaces\CollectionInterface;
 use Model\Interfaces\BeanInterface;
 use Model\Bean\AbstractBean;
-abstract class AbstractCollection extends \ArrayIterator implements CollectionInterface
+use ArrayIterator;
+abstract class AbstractCollection extends ArrayIterator implements CollectionInterface
 {
 
 	/**
@@ -25,7 +26,7 @@ abstract class AbstractCollection extends \ArrayIterator implements CollectionIn
 	/**
 	 *
 	 * validate collectable
-	 * @param AbstractBean $collectable
+	 * @param Collectable $collectable
 	 */
 	protected function validate($bean)
 	{
@@ -60,7 +61,7 @@ abstract class AbstractCollection extends \ArrayIterator implements CollectionIn
 
 	/**
 	 * Return current array entry
-	 * @return AbstractBean
+	 * @return Collectable
 	 */
 	public function current()
 	{
@@ -191,6 +192,18 @@ abstract class AbstractCollection extends \ArrayIterator implements CollectionIn
 		return $newCollection;
 	}
 
+	public function clear()
+	{
+		foreach ($this as $collectable)
+		{
+// 			if($this->containsIndex($collectable->getIndex()))
+				$this->offsetUnset($collectable->getIndex());
+		}
+		
+		return $this;
+		
+			
+	}
 	/**
 	 * Intersect two Collection
 	 * @param Collection $collection
@@ -369,4 +382,25 @@ abstract class AbstractCollection extends \ArrayIterator implements CollectionIn
 		return $getCollection;
 	}
 
+	private function appendFunction($newCollection){
+		$appendFunction = function(AbstractBean $collectable) use($newCollection){
+			if( !$newCollection->containsIndex( $collectable->getIndex() ) ){
+				$newCollection->append($collectable);
+			}
+		};
+		return $appendFunction;
+	}
+	
+	
+	public function getByPrimaryKeys($keys)
+	{
+		$newCollection = $this->newInstance();
+		$this->each(function(AbstractBean $collectable) use($newCollection, $keys){
+			if(in_array($collectable->getIndex(), $keys)){
+				$newCollection->append($collectable);
+			}
+		});
+		
+		return $newCollection;
+	}
 }
